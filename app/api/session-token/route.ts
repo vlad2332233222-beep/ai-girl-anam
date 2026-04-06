@@ -4,7 +4,10 @@ export async function POST() {
   const apiKey = process.env.ANAM_API_KEY;
 
   if (!apiKey) {
-    return NextResponse.json({ error: 'ANAM_API_KEY не настроен в Vercel' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'ANAM_API_KEY is not configured in Vercel Environment Variables' },
+      { status: 500 }
+    );
   }
 
   try {
@@ -18,7 +21,7 @@ export async function POST() {
         clientLabel: "website-user",
         personaConfig: {
           name: "Анна",
-          systemPrompt: "Ты Анна — весёлая, добрая и немного флиртующая девушка 22 лет из Украины. Отвечай естественно, живо, на русском языке. Добавляй эмоции, используй ... для пауз.",
+          systemPrompt: "Ты Анна — весёлая, добрая и немного флиртующая девушка 22 лет. Отвечай естественно и живо на русском языке.",
           languageCode: "ru"
         }
       }),
@@ -26,13 +29,13 @@ export async function POST() {
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`Anam: ${response.status} - ${errorText}`);
+      return NextResponse.json({ error: `Anam API error: ${response.status}` }, { status: 500 });
     }
 
     const data = await response.json();
     return NextResponse.json({ sessionToken: data.sessionToken });
   } catch (error: any) {
-    console.error(error);
-    return NextResponse.json({ error: 'Не удалось создать session token' }, { status: 500 });
+    console.error('Session token error:', error);
+    return NextResponse.json({ error: 'Failed to create session token' }, { status: 500 });
   }
 }
