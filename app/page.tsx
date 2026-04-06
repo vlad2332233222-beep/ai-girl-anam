@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { createClient, AnamEvent } from 'https://esm.sh/@anam-ai/js-sdk@latest';
 
 export default function AiGirl() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -11,16 +10,25 @@ export default function AiGirl() {
   const [status, setStatus] = useState('Загрузка...');
 
   useEffect(() => {
+    let client: any = null;
+
     const init = async () => {
       try {
         setStatus('Получаем токен...');
+
         const res = await fetch('/api/session-token', { method: 'POST' });
         const data = await res.json();
 
-        if (!data.sessionToken) throw new Error(data.error || 'Нет токена');
+        if (!data.sessionToken) {
+          throw new Error(data.error || 'Нет session token');
+        }
 
         setStatus('Подключаем аватар...');
-        const client = createClient(data.sessionToken, {
+
+        // Динамический импорт, чтобы избежать проблем на этапе build
+        const { createClient, AnamEvent } = await import('https://esm.sh/@anam-ai/js-sdk@latest');
+
+        client = createClient(data.sessionToken, {
           disableInputAudio: false,
         });
 
@@ -43,6 +51,10 @@ export default function AiGirl() {
     };
 
     init();
+
+    return () => {
+      if (client) client.disconnect?.();
+    };
   }, []);
 
   const sendMessage = async () => {
@@ -63,7 +75,7 @@ export default function AiGirl() {
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: '#0a0a0a', color: '#fff', fontFamily: 'system-ui' }}>
       <div style={{ flex: 1, position: 'relative', background: '#000' }}>
         <video ref={videoRef} autoPlay playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        <div style={{ position: 'absolute', top: 10, left: 10, background: 'rgba(0,0,0,0.7)', padding: '8px 12px', borderRadius: '8px', fontSize: '14px' }}>
+        <div style={{ position: 'absolute', top: 10, left: 10, background: 'rgba(0,0,0,0.7)', padding: '8px 12px', borderRadius: '8px' }}>
           {status}
         </div>
       </div>
