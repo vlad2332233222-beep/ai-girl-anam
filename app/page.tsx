@@ -5,27 +5,22 @@ import { useState } from 'react';
 export default function AiGirl() {
   const [messages, setMessages] = useState<{ sender: string; text: string }[]>([]);
   const [input, setInput] = useState('');
-  const [status, setStatus] = useState('Загрузка аватара...');
-
-  // ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
-  // Замени на свой реальный embed URL из Anam Lab
-  const embedUrl = "https://lab.anam.ai/build/86d83f93-869d-4078-8b24-44740cfcd5ea"; 
-  // ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
+  const [status, setStatus] = useState('AI-Девушка готова');
 
   const sendMessage = () => {
     if (!input.trim()) return;
 
-    setMessages(prev => [...prev, { sender: 'user', text: input.trim() }]);
+    const userMessage = input.trim();
+    setMessages(prev => [...prev, { sender: 'user', text: userMessage }]);
+    setInput('');
 
-    // Пока простой ответ (позже можно подключить реальный чат через API)
+    // Симуляция ответа (потом заменим на реальный чат)
     setTimeout(() => {
       setMessages(prev => [...prev, { 
         sender: 'AI', 
-        text: 'Привет! Я Анна. Рада тебя видеть 😊 Что хочешь сегодня поговорить?' 
+        text: `Привет! Я Анна 😊 Ты написал: "${userMessage}". Что ещё хочешь обсудить?` 
       }]);
-    }, 1000);
-
-    setInput('');
+    }, 700);
   };
 
   return (
@@ -38,46 +33,64 @@ export default function AiGirl() {
       fontFamily: 'system-ui, sans-serif',
       overflow: 'hidden'
     }}>
-      {/* Аватар через iframe */}
-      <div style={{ flex: 1, position: 'relative', background: '#000' }}>
-        <iframe 
-          src={embedUrl}
-          style={{ width: '100%', height: '100%', border: 'none' }}
-          allow="camera; microphone; autoplay; clipboard-write"
-          title="AI Girl Anna"
-        />
+      {/* Верхняя часть — аватар (пока фото, потом заменим на видео) */}
+      <div style={{ flex: 1, background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ 
+            width: '280px', 
+            height: '280px', 
+            background: 'linear-gradient(135deg, #ff9a9e, #fad0c4)', 
+            borderRadius: '50%', 
+            margin: '0 auto 20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '100px'
+          }}>
+            👩‍🦰
+          </div>
+          <h2>Анна — твоя AI-девушка</h2>
+          <p style={{ color: '#aaa' }}>Реалистичная анимация скоро будет подключена</p>
+        </div>
+
         <div style={{ 
           position: 'absolute', 
-          top: 15, 
-          left: 15, 
-          background: 'rgba(0,0,0,0.75)', 
+          top: 20, 
+          left: 20, 
+          background: 'rgba(0,0,0,0.7)', 
           padding: '10px 16px', 
-          borderRadius: '10px',
-          zIndex: 10
+          borderRadius: '10px' 
         }}>
           {status}
         </div>
       </div>
 
-      {/* Чат снизу */}
+      {/* Чат */}
       <div style={{ 
-        height: '340px', 
+        height: '380px', 
         overflowY: 'auto', 
-        padding: '16px', 
+        padding: '20px', 
         background: '#111', 
         display: 'flex', 
         flexDirection: 'column', 
         gap: '12px' 
       }}>
+        {messages.length === 0 && (
+          <div style={{ textAlign: 'center', color: '#777', marginTop: '60px' }}>
+            Напиши первое сообщение Анне...
+          </div>
+        )}
         {messages.map((msg, i) => (
           <div
             key={i}
             style={{
               alignSelf: msg.sender === 'user' ? 'flex-end' : 'flex-start',
-              background: msg.sender === 'user' ? '#0d6efd' : '#333',
-              padding: '13px 17px',
+              background: msg.sender === 'user' ? '#0d6efd' : '#2d2d2d',
+              padding: '14px 18px',
               borderRadius: '18px',
-              maxWidth: '80%',
+              maxWidth: '78%',
+              borderBottomRightRadius: msg.sender === 'user' ? '4px' : '18px',
+              borderBottomLeftRadius: msg.sender === 'user' ? '18px' : '4px',
             }}
           >
             {msg.text}
@@ -86,13 +99,13 @@ export default function AiGirl() {
       </div>
 
       {/* Поле ввода */}
-      <div style={{ padding: '14px', background: '#111', borderTop: '1px solid #333' }}>
-        <div style={{ display: 'flex', gap: '10px' }}>
+      <div style={{ padding: '16px', background: '#111', borderTop: '1px solid #333' }}>
+        <div style={{ display: 'flex', gap: '12px' }}>
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-            placeholder="Напиши сообщение Анне..."
+            placeholder="Напиши Анне..."
             style={{ 
               flex: 1, 
               padding: '16px 20px', 
@@ -106,12 +119,13 @@ export default function AiGirl() {
           <button 
             onClick={sendMessage}
             style={{ 
-              padding: '0 32px', 
+              padding: '0 36px', 
               borderRadius: '9999px', 
               background: '#0d6efd', 
               border: 'none', 
               color: 'white', 
-              fontWeight: '600' 
+              fontWeight: '600',
+              cursor: 'pointer'
             }}
           >
             Отправить
