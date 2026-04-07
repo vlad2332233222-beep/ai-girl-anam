@@ -9,7 +9,7 @@ export default function AiGirl() {
 
   // ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
   // Замени на свой реальный embed URL из Anam Lab
-  const embedUrl = "https://lab.anam.ai/embed/YOUR_PERSONA_ID_HERE"; 
+  const embedUrl = "https://lab.anam.ai/build/86d83f93-869d-4078-8b24-44740cfcd5ea"; 
   // ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
 
   const sendMessage = () => {
